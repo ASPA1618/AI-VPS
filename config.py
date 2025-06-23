@@ -20,3 +20,5 @@ ID_RSA_PUB = os.getenv("ID_RSA_PUB")
 ASPA_VPS_SSH_KEY = os.getenv("ASPA_VPS_SSH_KEY")
 # DeepSeek API key
 DEEPSEEK = os.getenv("DEEPSEEK")
+
+ID_RSA_PUB_PATH = os.getenv("ID_RSA_PUB_PATH")
