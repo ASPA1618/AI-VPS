@@ -44,7 +44,10 @@ def build_admin_keyboard(active_sources):
         ))
     return kb
 
+from aiogram.filters import Command
+
 @router.message(Command("admin"))
+
 async def admin_panel(message: types.Message):
     if message.from_user.id not in ADMIN_IDS:
         await message.answer("⛔️ Нет доступа.")
