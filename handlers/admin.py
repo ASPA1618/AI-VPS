@@ -1,12 +1,9 @@
-print("ADMIN ROUTER LOADED")
-
-@router.message(Command("admin"))
-async def admin_panel(message: types.Message):
-    print("ADMIN HANDLER CALLED", message.from_user.id)
 import json
 from aiogram import types, Router
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.filters import Command
+
+print("ADMIN ROUTER LOADED")
 
 # 1. Основной бот
 MAIN_BOT_ID = 7717263680  # user_id бота (информационно)
@@ -18,7 +15,7 @@ ADMINS_GROUP_ID = -1002804535488  # для заявок и работы с кл�
 LOG_CHAT_ID = -1002528385675      # только для технических логов
 
 # Telegram ID всех админов, кто может управлять источниками через админку
-ADMIN_IDS = [8102776356, 7717263680]  # добавь свои
+ADMIN_IDS = [8102776356, 7717263680]  # твой личный + бот
 
 CONFIG_PATH = "handlers/config.json"
 
@@ -49,11 +46,9 @@ def build_admin_keyboard(active_sources):
         ))
     return kb
 
-from aiogram.filters import Command
-
 @router.message(Command("admin"))
-
 async def admin_panel(message: types.Message):
+    print("ADMIN HANDLER CALLED", message.from_user.id)
     if message.from_user.id not in ADMIN_IDS:
         await message.answer("⛔️ Нет доступа.")
         return
