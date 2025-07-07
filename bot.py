@@ -1,4 +1,7 @@
 import os
+import pytesseract
+from PIL import Image
+import re
 from omega_api import vin_simple_search
 from baza_gai_api import gai_vin_search
 from aiogram import Bot, Dispatcher, types, F
