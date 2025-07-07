@@ -1,6 +1,7 @@
 import json
 from aiogram import types, Router
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.filters import Command
 
 # 1. Основной бот
 MAIN_BOT_ID = 7717263680  # user_id бота (информационно)
@@ -14,7 +15,7 @@ LOG_CHAT_ID = -1002528385675      # только для технических �
 # Telegram ID всех админов, кто может управлять источниками через админку
 ADMIN_IDS = [2804535488]  # добавь свои
 
-CONFIG_PATH = "config.json"
+CONFIG_PATH = "handlers/config.json"
 
 def load_config():
     with open(CONFIG_PATH, "r", encoding="utf-8") as f:
@@ -43,7 +44,7 @@ def build_admin_keyboard(active_sources):
         ))
     return kb
 
-@router.message(commands=['admin'])
+@router.message(Command("admin"))
 async def admin_panel(message: types.Message):
     if message.from_user.id not in ADMIN_IDS:
         await message.answer("⛔️ Нет доступа.")
