@@ -2,6 +2,8 @@ import os
 import pytesseract
 from PIL import Image
 import re
+NOVA_POSHTA_API_KEY = os.getenv("NOVA_POSHTA_API_KEY")
+print(NOVA_POSHTA_API_KEY)   # для теста, выведет ключ если .env подключён
 from omega_api import vin_simple_search
 from baza_gai_api import gai_vin_search
 from aiogram import Bot, Dispatcher, types, F
@@ -35,6 +37,7 @@ dp.include_router(admin_router)
 MAIN_BOT_ID = 7717263680
 ADMINS_GROUP_ID = -1002804535488
 LOG_CHAT_ID = -1002528385675
+ADMIN_IDS = [8102776356]     # <-- твой основной админский ID
 
 logger.add("bot.log", rotation="10 MB", compression="zip", enqueue=True)
 
