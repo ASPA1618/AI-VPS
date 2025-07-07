@@ -259,3 +259,15 @@ async def process_vin(message, vin_code):
 if __name__ == "__main__":
     import asyncio
     asyncio.run(dp.start_polling(bot))
+    from users_storage import load_users, save_users
+
+users = load_users()  # {telegram_id: {"lang": ..., "name": ...}}
+
+def set_user_field(user_id, key, value):
+    users.setdefault(str(user_id), {})
+    users[str(user_id)][key] = value
+    save_users(users)
+
+def get_user_field(user_id, key, default=None):
+    return users.get(str(user_id), {}).get(key, default)
+
