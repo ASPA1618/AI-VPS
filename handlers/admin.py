@@ -1,3 +1,8 @@
+print("ADMIN ROUTER LOADED")
+
+@router.message(Command("admin"))
+async def admin_panel(message: types.Message):
+    print("ADMIN HANDLER CALLED", message.from_user.id)
 import json
 from aiogram import types, Router
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
