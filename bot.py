@@ -1,11 +1,4 @@
 import os
-import pytesseract
-from PIL import Image, ImageOps
-import re
-
-from omega_api import vin_simple_search
-from baza_gai_api import gai_vin_search
-from nova_poshta_api import get_warehouses, get_cities  # твой новый модуль для НП
 from aiogram import Bot, Dispatcher, types, F
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 from aiogram.filters import CommandStart
@@ -13,22 +6,25 @@ from aiogram.utils.keyboard import ReplyKeyboardBuilder
 from dotenv import load_dotenv
 from loguru import logger
 
-# Языки и пользовательские данные
+from handlers.admin import router as admin_router
+from ocr_utils import extract_vin_from_image
+from voice_to_text import recognize_speech
+from welcome import make_welcome_text, get_profile_fields
+from car_card import create_car_card
+from product_menu import get_base_products
+from omega_api import vin_simple_search
+from baza_gai_api import gai_vin_search
+from nova_poshta_api import get_warehouses, get_cities
+
+# Переменные пользователя
 user_lang = {}
 user_name = {}
-
-LANGUAGES = {
-    "uk": ("🇺🇦 Українська", "uk"),
-    "ru": ("🇷🇺 Русский", "ru"),
-    "en": ("🇬🇧 English", "en")
-}
 
 load_dotenv()
 TOKEN = os.getenv("BOT_TG_TOKEN")
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
 
-from handlers.admin import router as admin_router
 dp.include_router(admin_router)
 
 MAIN_BOT_ID = 7717263680
@@ -44,40 +40,35 @@ async def log_to_tg(bot, message):
     except Exception as e:
         logger.error(f"Ошибка при отправке лога в Telegram: {e}")
 
-def extract_vin_from_image(photo_path):
-    try:
-        img = Image.open(photo_path)
-        img = img.convert('L')  # ч/б
-        img = ImageOps.autocontrast(img)
-        text = pytesseract.image_to_string(img)
-        text = text.upper().replace(' ', '')
-        for _from, _to in [("O", "0"), ("I", "1"), ("Q", "0"), ("S", "5"), ("B", "8")]:
-            text = text.replace(_from, _to)
-        matches = re.findall(r'\b[A-HJ-NPR-Z0-9]{17}\b', text)
-        if matches:
-            return matches[0]
-    except Exception as e:
-        logger.error(f"OCR error: {e}")
-    return None
-
 @dp.message(CommandStart())
 async def start(message: types.Message):
     kb = ReplyKeyboardBuilder()
-    for k, (title, code) in LANGUAGES.items():
+    for k, (title, code) in {
+        "uk": ("🇺🇦 Українська", "uk"),
+        "ru": ("🇷🇺 Русский", "ru"),
+        "en": ("🇬🇧 English", "en")
+    }.items():
         kb.button(text=title)
     kb.adjust(3)
     await message.answer(
-        "Вітаємо! Надішліть, будь ласка, ваш VIN-код текстом або фото техпаспорта (через скрепку 📎).\n\nОберіть мову:",
+        make_welcome_text(),
         reply_markup=kb.as_markup(resize_keyboard=True)
     )
     logger.info(f"User {message.from_user.id} started bot.")
     await log_to_tg(bot, f"🟢 Користувач {message.from_user.id} стартував бота.")
 
-@dp.message(F.text.in_([v[0] for v in LANGUAGES.values()]))
+@dp.message(F.text.in_([v[0] for v in {
+    "uk": ("🇺🇦 Українська", "uk"),
+    "ru": ("🇷🇺 Русский", "ru"),
+    "en": ("🇬🇧 English", "en")
+}.values()]))
 async def choose_lang(message: types.Message):
-    lang_code = [k for k, v in LANGUAGES.items() if v[0] == message.text][0]
+    lang_code = [k for k, v in {
+        "uk": ("🇺🇦 Українська", "uk"),
+        "ru": ("🇷🇺 Русский", "ru"),
+        "en": ("🇬🇧 English", "en")
+    }.items() if v[0] == message.text][0]
     user_lang[message.from_user.id] = lang_code
-    # Спросить имя
     suggest_name = (
         f"Як до вас звертатись? (наприклад, {message.from_user.username or message.from_user.id})"
     )
