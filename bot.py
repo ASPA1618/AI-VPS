@@ -1,24 +1,22 @@
 import os
 import pytesseract
-from PIL import Image
+from PIL import Image, ImageOps
 import re
-NOVA_POSHTA_API_KEY = os.getenv("NOVA_POSHTA_API_KEY")
-print(NOVA_POSHTA_API_KEY)   # для теста, выведет ключ если .env подключён
+
 from omega_api import vin_simple_search
 from baza_gai_api import gai_vin_search
+from nova_poshta_api import get_warehouses, get_cities  # твой новый модуль для НП
 from aiogram import Bot, Dispatcher, types, F
-from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, FSInputFile
+from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 from aiogram.filters import CommandStart
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
 from dotenv import load_dotenv
 from loguru import logger
-from gtts import gTTS
-from pydub import AudioSegment
 
-# FSM не нужен — просто словарь для хранения языка пользователя
+# Языки и пользовательские данные
 user_lang = {}
+user_name = {}
 
-# Языки
 LANGUAGES = {
     "uk": ("🇺🇦 Українська", "uk"),
     "ru": ("🇷🇺 Русский", "ru"),
@@ -30,14 +28,13 @@ TOKEN = os.getenv("BOT_TG_TOKEN")
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
 
-# Подключаем админ-панель
 from handlers.admin import router as admin_router
 dp.include_router(admin_router)
 
 MAIN_BOT_ID = 7717263680
 ADMINS_GROUP_ID = -1002804535488
 LOG_CHAT_ID = -1002528385675
-ADMIN_IDS = [8102776356]     # <-- твой основной админский ID
+ADMIN_IDS = [8102776356]
 
 logger.add("bot.log", rotation="10 MB", compression="zip", enqueue=True)
 
@@ -49,29 +46,19 @@ async def log_to_tg(bot, message):
 
 def extract_vin_from_image(photo_path):
     try:
-        text = pytesseract.image_to_string(Image.open(photo_path))
-        match = re.search(r'\b[A-HJ-NPR-Z0-9]{17}\b', text)
-        logger.info(f"OCR text: {text}")
-        if match:
-            vin = match.group(0)
-            logger.info(f"VIN распознан: {vin}")
-            return vin
-        logger.warning("VIN не найден в распознанном тексте.")
+        img = Image.open(photo_path)
+        img = img.convert('L')  # ч/б
+        img = ImageOps.autocontrast(img)
+        text = pytesseract.image_to_string(img)
+        text = text.upper().replace(' ', '')
+        for _from, _to in [("O", "0"), ("I", "1"), ("Q", "0"), ("S", "5"), ("B", "8")]:
+            text = text.replace(_from, _to)
+        matches = re.findall(r'\b[A-HJ-NPR-Z0-9]{17}\b', text)
+        if matches:
+            return matches[0]
     except Exception as e:
         logger.error(f"OCR error: {e}")
     return None
-
-async def send_voice(bot, chat_id, text, lang_code):
-    # Сохраняем в mp3, конвертируем в ogg через pydub (требует ffmpeg)
-    tts = gTTS(text, lang=lang_code)
-    tts.save("answer.mp3")
-    sound = AudioSegment.from_file("answer.mp3")
-    sound.export("answer.ogg", format="ogg", codec="libopus")
-    voice_file = FSInputFile("answer.ogg")
-    await bot.send_voice(chat_id, voice_file)
-    # Удаляем временные файлы
-    os.remove("answer.mp3")
-    os.remove("answer.ogg")
 
 @dp.message(CommandStart())
 async def start(message: types.Message):
@@ -88,14 +75,27 @@ async def start(message: types.Message):
 
 @dp.message(F.text.in_([v[0] for v in LANGUAGES.values()]))
 async def choose_lang(message: types.Message):
-    # Сохраняем язык для пользователя
     lang_code = [k for k, v in LANGUAGES.items() if v[0] == message.text][0]
     user_lang[message.from_user.id] = lang_code
-    await message.answer(f"Обрана мова: {LANGUAGES[lang_code][0]}. Продовжуємо...")
+    # Спросить имя
+    suggest_name = (
+        f"Як до вас звертатись? (наприклад, {message.from_user.username or message.from_user.id})"
+    )
+    await message.answer(suggest_name)
     logger.info(f"User {message.from_user.id} chose language: {lang_code}")
+
+@dp.message(lambda message: message.from_user.id not in user_name and not message.text.startswith('/'))
+async def set_name(message: types.Message):
+    name = message.text.strip()
+    user_name[message.from_user.id] = name
+    await message.answer(f"Дякуємо, {name}! Тепер надішліть VIN-код або фото техпаспорта.")
+    logger.info(f"User {message.from_user.id} set name: {name}")
 
 @dp.message(F.photo)
 async def handle_photo(message: types.Message):
+    if message.from_user.id not in user_name:
+        await message.answer("Спочатку вкажіть, як до вас звертатись (введіть ім'я).")
+        return
     photo = message.photo[-1]
     file = await bot.get_file(photo.file_id)
     file_path = file.file_path
@@ -105,40 +105,35 @@ async def handle_photo(message: types.Message):
     await log_to_tg(bot, f"📷 Користувач {message.from_user.id} надіслав фото.")
 
     vin_code = extract_vin_from_image(local_path)
-    lang_code = user_lang.get(message.from_user.id, "uk")
     if vin_code:
-        answer = f"Розпізнано VIN: {vin_code}\nПробиваємо у базах..."
-        await message.answer(answer)
-        await send_voice(bot, message.chat.id, answer, LANGUAGES[lang_code][1])
-        logger.info(f"VIN из фото: {vin_code}")
+        await message.answer(f"Розпізнано VIN: {vin_code}\nПробиваємо у базах...")
         await process_vin(message, vin_code)
     else:
-        answer = "Не вдалося розпізнати VIN-код. Спробуйте ще раз або надішліть текстом."
-        await message.answer(answer)
-        await send_voice(bot, message.chat.id, answer, LANGUAGES[lang_code][1])
+        await message.answer("Не вдалося розпізнати VIN-код. Спробуйте ще раз або надішліть текстом.")
         await bot.send_photo(
             ADMINS_GROUP_ID,
             photo=photo.file_id,
-            caption=f"❗ Не удалось распознать VIN с фото пользователя @{message.from_user.username or '-'} | ID: {message.from_user.id}"
+            caption=f"❗ Не удалось распознать VIN з фото @{message.from_user.username or '-'} | ID: {message.from_user.id}"
         )
         await log_to_tg(bot, f"❗ Фото без VIN від користувача {message.from_user.id}")
 
 @dp.message()
 async def handle_user_message(message: types.Message):
+    if message.text and message.text.startswith('/'):
+        return
+    if message.from_user.id not in user_name:
+        await message.answer("Вкажіть, як до вас звертатись (введіть ім'я).")
+        return
     text = message.text.strip() if message.text else ""
     is_vin = len(text) == 17 and all(c.isalnum() for c in text)
-    lang_code = user_lang.get(message.from_user.id, "uk")
 
     if is_vin:
-        logger.info(f"VIN від тексту {text} від {message.from_user.id}")
         await process_vin(message, text)
     else:
         answer = "Ваше повідомлення прийнято. Оператор зв'яжеться з вами найближчим часом."
         await message.answer(answer)
-        await send_voice(bot, message.chat.id, answer, LANGUAGES[lang_code][1])
-
         user_info = (
-            f"🔔 *Нова заявка від користувача:*\n"
+            f"🔔 *Нова заявка від {user_name[message.from_user.id]}:*\n"
             f"👤 @{message.from_user.username or '-'} | ID: {message.from_user.id}\n"
             f"Текст:\n{text}\n"
         )
@@ -148,8 +143,6 @@ async def handle_user_message(message: types.Message):
 
 async def process_vin(message, vin_code):
     responses = []
-    lang_code = user_lang.get(message.from_user.id, "uk")
-
     gai_info = gai_vin_search(vin_code)
     if gai_info and gai_info.get('result'):
         car = gai_info['result']
@@ -176,7 +169,6 @@ async def process_vin(message, vin_code):
 
     answer = '\n\n'.join(responses)
     await message.answer(answer)
-    await send_voice(bot, message.chat.id, answer, LANGUAGES[lang_code][1])
     logger.info(f"Відповідь користувачу {message.from_user.id} по VIN {vin_code}: {responses}")
     await log_to_tg(bot, f"🔍 Пробив по VIN {vin_code} для {message.from_user.id}")
 
