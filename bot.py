@@ -149,6 +149,9 @@ async def process_vin(message, vin_code):
     await message.answer('\n\n'.join(responses))
     logger.info(f"Відповідь користувачу {message.from_user.id} по VIN {vin_code}: {responses}")
     await log_to_tg(bot, f"🔍 Пробив по VIN {vin_code} для {message.from_user.id}")
+    from handlers.admin import router as admin_router
+dp.include_router(admin_router)
+
 
 if __name__ == "__main__":
     import asyncio
