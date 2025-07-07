@@ -10,16 +10,15 @@ from aiogram.filters import CommandStart
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
 from dotenv import load_dotenv
 from loguru import logger
-from handlers.admin import router as admin_router
-dp.include_router(admin_router)
-
-# === Настройка логов ===
-logger.add("bot.log", rotation="10 MB", compression="zip", enqueue=True)
 
 load_dotenv()
 TOKEN = os.getenv("BOT_TG_TOKEN")
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
+
+# Подключаем админ-панель
+from handlers.admin import router as admin_router
+dp.include_router(admin_router)
 
 MAIN_BOT_ID = 7717263680  # user_id бота (только для информации)
 ADMINS_GROUP_ID = -1002804535488  # ID группы операторов/админов
@@ -30,6 +29,8 @@ LANGUAGES = {
     "ru": "🇷🇺 Русский",
     "en": "🇬🇧 English"
 }
+
+logger.add("bot.log", rotation="10 MB", compression="zip", enqueue=True)
 
 # --- Вспомогательная функция логирования в Telegram
 async def log_to_tg(bot, message):
@@ -106,7 +107,6 @@ async def handle_user_message(message: types.Message):
         logger.info(f"VIN від тексту {text} від {message.from_user.id}")
         await process_vin(message, text)
     else:
-        # Это не VIN — отправляем заявку в группу операторов!
         await message.answer("Ваше повідомлення прийнято. Оператор зв'яжеться з вами найближчим часом.")
 
         user_info = (
@@ -149,9 +149,6 @@ async def process_vin(message, vin_code):
     await message.answer('\n\n'.join(responses))
     logger.info(f"Відповідь користувачу {message.from_user.id} по VIN {vin_code}: {responses}")
     await log_to_tg(bot, f"🔍 Пробив по VIN {vin_code} для {message.from_user.id}")
-    from handlers.admin import router as admin_router
-dp.include_router(admin_router)
-
 
 if __name__ == "__main__":
     import asyncio
