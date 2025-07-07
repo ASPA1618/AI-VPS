@@ -10,6 +10,8 @@ from aiogram.filters import CommandStart
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
 from dotenv import load_dotenv
 from loguru import logger
+from handlers.admin import router as admin_router
+dp.include_router(admin_router)
 
 # === Настройка логов ===
 logger.add("bot.log", rotation="10 MB", compression="zip", enqueue=True)
