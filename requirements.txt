@@ -7,4 +7,3 @@ paramiko>=3.5
 pynacl>=1.5
 cffi>=1.17
 pycparser>=2.22
-EOF
