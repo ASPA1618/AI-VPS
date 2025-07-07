@@ -1,5 +1,6 @@
 import os
 from omega_api import vin_simple_search
+from baza_gai_api import gai_vin_search
 from aiogram import Bot, Dispatcher, types, F
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 from aiogram.filters import CommandStart
