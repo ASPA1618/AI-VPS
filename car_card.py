@@ -1,2 +1,5 @@
-def create_car_card(vin, info_dict):
-    return {"vin": vin, **info_dict}
+def create_car_card(vin=None, info=None):
+    car = {"vin": vin}
+    if info:
+        car.update(info)
+    return car
