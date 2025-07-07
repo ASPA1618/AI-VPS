@@ -4,6 +4,12 @@ from dotenv import load_dotenv
 # Загружаем .env в переменные окружения
 load_dotenv()
 
+# config.py
+ACTIVE_SOURCES = {
+    "gai": True,
+    "omega": True,
+    "ae": False,  # для будущих интеграций
+}
 # Telegram bot token
 BOT_TG_TOKEN = os.getenv("BOT_TG_TOKEN")
 
