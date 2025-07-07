@@ -14,7 +14,8 @@ def extract_vin_from_image(photo_path):
             text = text.replace(_from, _to)
         matches = re.findall(r'\b[A-HJ-NPR-Z0-9]{17}\b', text)
         if matches:
+            logger.info(f"🔍 VIN распізнано: {matches[0]}")
             return matches[0]
     except Exception as e:
-        logger.error(f"OCR error: {e}")
+        logger.error(f"🛑 OCR error: {e}")
     return None
