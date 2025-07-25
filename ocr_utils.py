@@ -1,21 +1,63 @@
-from PIL import Image, ImageOps
+import os
 import pytesseract
-import re
-from loguru import logger
+import easyocr
+from google.cloud import vision
+import io
+from PIL import Image
 
-def extract_vin_from_image(photo_path):
+# выбираем движок для OCR
+OCR_METHOD = os.getenv("OCR_METHOD", "tesseract")  # tesseract | easyocr | google
+TESSERACT_PATH = os.getenv("TESSERACT_PATH", None)
+GOOGLE_CREDENTIALS = os.getenv("GOOGLE_APPLICATION_CREDENTIALS", None)
+
+if TESSERACT_PATH:
+    pytesseract.pytesseract.tesseract_cmd = TESSERACT_PATH
+
+# EasyOCR reader создаётся один раз
+_easyocr_reader = None
+if OCR_METHOD == "easyocr":
+    _easyocr_reader = easyocr.Reader(['en'])
+
+def extract_vin_from_image(image_path: str) -> str:
+    if OCR_METHOD == "tesseract":
+        return _extract_tesseract(image_path)
+    elif OCR_METHOD == "easyocr":
+        return _extract_easyocr(image_path)
+    elif OCR_METHOD == "google":
+        return _extract_google(image_path)
+    else:
+        raise ValueError(f"Unknown OCR_METHOD: {OCR_METHOD}")
+
+def _extract_tesseract(image_path: str) -> str:
     try:
-        img = Image.open(photo_path)
-        img = img.convert('L')
-        img = ImageOps.autocontrast(img)
-        text = pytesseract.image_to_string(img)
-        text = text.upper().replace(' ', '')
-        for _from, _to in [("O", "0"), ("I", "1"), ("Q", "0"), ("S", "5"), ("B", "8")]:
-            text = text.replace(_from, _to)
-        matches = re.findall(r'\b[A-HJ-NPR-Z0-9]{17}\b', text)
-        if matches:
-            logger.info(f"🔍 VIN распізнано: {matches[0]}")
-            return matches[0]
+        image = Image.open(image_path)
+        return pytesseract.image_to_string(image).strip()
     except Exception as e:
-        logger.error(f"🛑 OCR error: {e}")
-    return None
+        return f"[Tesseract OCR error] {e}"
+
+def _extract_easyocr(image_path: str) -> str:
+    try:
+        results = _easyocr_reader.readtext(image_path)
+        text = " ".join([r[1] for r in results])
+        return text.strip()
+    except Exception as e:
+        return f"[EasyOCR error] {e}"
+
+def _extract_google(image_path: str) -> str:
+    try:
+        client = vision.ImageAnnotatorClient()
+        with io.open(image_path, 'rb') as image_file:
+            content = image_file.read()
+        image = vision.Image(content=content)
+        response = client.text_detection(image=image)
+        texts = response.text_annotations
+        if texts:
+            return texts[0].description.strip()
+        return ""
+    except Exception as e:
+        return f"[Google OCR error] {e}"
+
+if __name__ == "__main__":
+    path = "vin_sample.jpg"
+    print(f"Using: {OCR_METHOD}")
+    print(extract_vin_from_image(path))
