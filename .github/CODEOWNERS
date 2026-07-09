@@ -1,0 +1,9 @@
+# Default owner for the current single-owner ASPA repository.
+* @ASPA1618
+
+# Sensitive engineering boundaries.
+/.github/ @ASPA1618
+/docs/data/sql/ @ASPA1618
+/docs/data/legacy/ @ASPA1618
+/ops/snapshot/ @ASPA1618
+/tests/snapshot/ @ASPA1618
