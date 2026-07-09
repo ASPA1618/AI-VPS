@@ -34,7 +34,10 @@ jobs:
         run: |
           set -euo pipefail
           forbidden_regex='(^|/)(\.env($|\.)|ASPA_Legacy_.*\.(csv|xlsx|zip)$|WORK AI online.*\.xlsx$|google-credentials\.json$|.*service-account.*\.json$|.*\.(pem|p12|pfx|dump|backup|sqlite3?)$)'
-          matches="$(git ls-files | grep -Ei "$forbidden_regex" || true)"
+          matches="$(git ls-files \
+            | grep -Ei "$forbidden_regex" \
+            | grep -Ev '(^|/)\.env\.example$' \
+            || true)"
           if [[ -n "$matches" ]]; then
             echo "Forbidden tracked artifacts detected:"
             echo "$matches"
