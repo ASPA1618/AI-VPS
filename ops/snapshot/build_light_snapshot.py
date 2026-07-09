@@ -14,8 +14,10 @@ import hashlib
 import json
 import re
 import subprocess
+import sys
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlparse
 
 SCHEMA_VERSION = "aspa-light-snapshot-v1"
 MAX_BYTES = 512 * 1024
@@ -68,6 +70,7 @@ SECRET = re.compile(
     r"Bearer\s+[A-Za-z0-9._~-]{16,}|BEGIN\s+(?:RSA|OPENSSH|EC)\s+PRIVATE\s+KEY)",
     re.IGNORECASE,
 )
+REPO_SLUG = re.compile(r"^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$")
 
 
 def run_git(repo: Path, *args: str) -> str:
@@ -81,9 +84,23 @@ def run_git(repo: Path, *args: str) -> str:
     return result.stdout.strip()
 
 
+def normalise_remote(remote: str) -> str:
+    """Convert Git remote URLs to a non-sensitive owner/repository slug."""
+    value = remote.strip()
+    if value.startswith("git@") and ":" in value:
+        value = value.split(":", 1)[1]
+    elif "://" in value:
+        parsed = urlparse(value)
+        value = parsed.path.lstrip("/")
+    value = value.removesuffix(".git").strip("/")
+    if not REPO_SLUG.fullmatch(value):
+        raise ValueError("Git remote cannot be reduced to a safe owner/repository slug")
+    return value
+
+
 def git_state(repo: Path) -> dict[str, Any]:
     return {
-        "remote": run_git(repo, "config", "--get", "remote.origin.url"),
+        "repository": normalise_remote(run_git(repo, "config", "--get", "remote.origin.url")),
         "branch": run_git(repo, "branch", "--show-current") or "detached",
         "commit": run_git(repo, "rev-parse", "HEAD"),
         "dirty": bool(run_git(repo, "status", "--porcelain")),
@@ -148,6 +165,7 @@ def render_markdown(snapshot: dict[str, Any]) -> str:
         "",
         "## Repository",
         "",
+        f"- Repository: `{snapshot['repo']['repository']}`",
         f"- Branch: `{snapshot['repo']['branch']}`",
         f"- Commit: `{snapshot['repo']['commit']}`",
         f"- Dirty: `{str(snapshot['repo']['dirty']).lower()}`",
