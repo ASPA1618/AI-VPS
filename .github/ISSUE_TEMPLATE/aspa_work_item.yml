@@ -1,0 +1,115 @@
+name: ASPA work item
+description: Capture a business, architecture or implementation slice for ASPA.
+title: "[ASPA]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this form from desktop or mobile to create a traceable ASPA work item.
+
+        **Do not paste secrets, API keys, passwords, customer names, phones, emails, addresses, VINs, balances, order rows or raw supplier payloads.**
+        Reference protected evidence by safe file/document ID, row range, task ID or connector location instead.
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      description: Primary ASPA domain affected by this work.
+      options:
+        - CRM / customers
+        - Vehicles / fitment / TecDoc
+        - Requests / offers / orders
+        - Suppliers / prices / stock
+        - Payments / balances / accounting
+        - Telegram / Mini App / notifications
+        - Retail web / e-commerce
+        - Agent / task board / connectors
+        - WSL / VPS / sync / operations
+        - Architecture / documentation
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: execution_plane
+    attributes:
+      label: Expected execution plane
+      description: Where the implementation will most likely run.
+      options:
+        - Documentation / GitHub only
+        - WSL / Codex / VS Code
+        - VPS worker / service
+        - Google Drive or connector workflow
+        - Mixed / not yet known
+    validations:
+      required: true
+
+  - type: textarea
+    id: business_goal
+    attributes:
+      label: Business goal
+      description: Explain what business capability or decision this unlocks.
+      placeholder: "Example: remember an observed retrofit so future part searches use actual vehicle configuration instead of VIN baseline only."
+    validations:
+      required: true
+
+  - type: textarea
+    id: current_state
+    attributes:
+      label: Current state and evidence
+      description: Describe what exists now and reference safe evidence, commits, files, issue numbers or connector documents.
+      placeholder: "Current branch/commit, relevant architecture doc, test output, safe document ID, or source row range without raw personal data."
+    validations:
+      required: true
+
+  - type: textarea
+    id: boundaries
+    attributes:
+      label: Scope boundaries
+      description: State what is included and explicitly excluded from this slice.
+      placeholder: |
+        Included:
+        - schema and resolver contract
+        - synthetic tests
+
+        Excluded:
+        - production migration
+        - irreversible customer merges
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance evidence
+      description: Define observable completion evidence.
+      placeholder: |
+        - migration/schema contract exists
+        - tests pass
+        - idempotency demonstrated
+        - limitations documented
+        - branch pushed and PR linked
+    validations:
+      required: true
+
+  - type: textarea
+    id: risks
+    attributes:
+      label: Risks and irreversible decisions
+      description: Note privacy, money, customer data, supplier load, destructive migrations or other risks.
+
+  - type: textarea
+    id: next_slices
+    attributes:
+      label: Likely next 2–3 slices
+      description: List the next bounded actions after this item, without expanding the current scope.
+
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Safety confirmation
+      options:
+        - label: I did not include secrets, credentials or raw personal/business records in this issue.
+          required: true
+        - label: Any production mutation, payment, order, customer merge or destructive database action requires explicit approval and evidence.
+          required: true
