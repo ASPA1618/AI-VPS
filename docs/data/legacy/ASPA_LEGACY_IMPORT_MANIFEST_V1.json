@@ -1,0 +1,182 @@
+{
+  "manifest_version": "aspa-legacy-import-manifest-v1",
+  "status": "prepared_not_imported",
+  "created_at": "2026-07-09T00:00:00+03:00",
+  "source": {
+    "system": "google_drive_sheet_export",
+    "document_title": "WORK AI online — LEGACY SOURCE",
+    "sheet": "GENERAL",
+    "source_document_id": "11txK_2w92okhbITlGLyTnZ_VpAz52blEvAJ5m0t5vZc",
+    "source_file_name": "WORK AI online — LEGACY SOURCE.xlsx",
+    "source_file_size_bytes": 5812636,
+    "source_sha256": "08f181cd5de2da92aedd9fb54b594aa756dbbda77a1d408b84c4460478b09b62",
+    "source_row_count": 48736,
+    "source_column_count": 36
+  },
+  "target_runtime_layout": {
+    "repo_root": "/home/cebas/ASPA",
+    "raw_dir": "var/imports/legacy/<batch_id>/raw",
+    "staging_dir": "var/imports/legacy/<batch_id>/staging",
+    "evidence_dir": "var/imports/legacy/<batch_id>/evidence",
+    "rejected_dir": "var/imports/legacy/<batch_id>/rejected",
+    "git_policy": "all var/imports content is runtime-only and must stay outside Git"
+  },
+  "parser": {
+    "parser_version": "legacy-general-five-block-extraction-v1",
+    "contract_version": "aspa-legacy-to-live-business-data-plane-v1",
+    "date_policy_version": "business-day-session-v1-user-approved-approximation",
+    "idempotency_key_template": "sha256(source_sha256|parser_version|contract_version|tenant_id)"
+  },
+  "artifacts": [
+    {
+      "name": "ASPA_Legacy_Client_Registry_v1.csv",
+      "role": "canonical_customer_staging",
+      "rows": 330,
+      "size_bytes": 109569,
+      "sha256": "2fa0cb3fe2b9e588a9609ff9649a3cfe0ae293bf6a3920ca1c104755ece8af18"
+    },
+    {
+      "name": "ASPA_Legacy_Client_Source_Occurrences_v1.csv",
+      "role": "customer_provenance",
+      "rows": 5933,
+      "size_bytes": 1122099,
+      "sha256": "660485a90c863782204d097fea2789ee0f0ac496fcbd8b8499fce9cedc1d1d59"
+    },
+    {
+      "name": "ASPA_Legacy_Client_Review_Queue_v1.csv",
+      "role": "customer_qa",
+      "rows": 471,
+      "size_bytes": 60782,
+      "sha256": "b1d2f765837b753af8864dec1bb909647eea657816c1596ab850b7e97271c4f6"
+    },
+    {
+      "name": "ASPA_Legacy_Vehicle_Registry_v1.csv",
+      "role": "canonical_vehicle_staging",
+      "rows": 1979,
+      "size_bytes": 777269,
+      "sha256": "394c364c197ad22dfc6035c6ee33725fc26a65aa987f7f631b09cdd3a50ca6af"
+    },
+    {
+      "name": "ASPA_Legacy_Vehicle_Source_Occurrences_v1.csv",
+      "role": "vehicle_provenance",
+      "rows": 5780,
+      "size_bytes": 2212693,
+      "sha256": "600ffd168edc735d92f1a9d48ec666c068213ece107f696b7f9196cf9df02342"
+    },
+    {
+      "name": "ASPA_Legacy_Customer_Vehicle_Links_v1.csv",
+      "role": "customer_vehicle_relationship_staging",
+      "rows": 1854,
+      "size_bytes": 343101,
+      "sha256": "3ab374f100781169bd88b4e4ea66717dcbeab68e2214ac2a7fa30a2844581948"
+    },
+    {
+      "name": "ASPA_Legacy_Vehicle_Review_Queue_v1.csv",
+      "role": "vehicle_qa",
+      "rows": 210,
+      "size_bytes": 43880,
+      "sha256": "a98ebfc7313beab987eda556ee018b0686fdf19a42fed1e56173b37e2eac0151"
+    },
+    {
+      "name": "ASPA_Legacy_Request_Registry_v1.csv",
+      "role": "canonical_request_staging",
+      "rows": 21792,
+      "size_bytes": 5004749,
+      "sha256": "366178ff846551c85c4b396d10b52003da2e917c2e4bc4d97b73997c3660a27b"
+    },
+    {
+      "name": "ASPA_Legacy_Request_Offer_Lines_v1.csv",
+      "role": "offer_line_staging",
+      "rows": 23236,
+      "size_bytes": 11178505,
+      "sha256": "f5e26a359cb6ac19515f14feff6d24fa63da2b2f131c0a183a06872d9e5627e4"
+    },
+    {
+      "name": "ASPA_Legacy_Transaction_Signals_v1.csv",
+      "role": "transaction_signal_staging",
+      "rows": 15644,
+      "size_bytes": 3591763,
+      "sha256": "45b12a005a6f17694b20c302f5b1f5aa66d53d12e896c4f33b9ba62c45440e1f"
+    },
+    {
+      "name": "ASPA_Legacy_Request_Review_Queue_v1.csv",
+      "role": "request_transaction_qa",
+      "rows": 6938,
+      "size_bytes": 3113498,
+      "sha256": "e33be588ee96a22433854b8d23ebf2a8d17554905dfc5a5fcccd7ed97a25e4cf"
+    },
+    {
+      "name": "ASPA_Legacy_Business_Day_Sessions_v1.csv",
+      "role": "business_day_session_staging",
+      "rows": 1063,
+      "size_bytes": 157505,
+      "sha256": "f574607ee1a3c1e39548f1c6dfad94a2de875cc4f51b4a48e9d1d8ecd99ca861"
+    },
+    {
+      "name": "ASPA_Legacy_Business_Day_Entity_Index_v1.csv",
+      "role": "session_entity_index",
+      "rows": 1063,
+      "size_bytes": 615392,
+      "sha256": "cfc3a2db0715e0651c79d6988c806f9368889d1d27dff734b399457bdad3c838"
+    },
+    {
+      "name": "ASPA_Legacy_Business_Day_Row_Assignments_v1.csv",
+      "role": "session_row_provenance",
+      "rows": 56741,
+      "size_bytes": 5655709,
+      "sha256": "2be645bead1dfe62c2c198a47040a13e2e250ce631dbeee2e1b4d48787f9e935"
+    },
+    {
+      "name": "ASPA_Legacy_Business_Day_QA_Queue_v1.csv",
+      "role": "business_day_qa",
+      "rows": 43,
+      "size_bytes": 7365,
+      "sha256": "c494f5356e3aed2175ebc04a681b98bfe4e5d2cc4795d434539b31d38bd7dd17"
+    },
+    {
+      "name": "ASPA_Legacy_Adjacent_Note_Registry_v1.csv",
+      "role": "typed_legacy_note_staging",
+      "rows": 4289,
+      "size_bytes": 1173949,
+      "sha256": "a4cf0774b24aa5dd183aa7945a7104f65c928d3a891c8b67a9c99bf4995b6a42"
+    },
+    {
+      "name": "ASPA_Legacy_Adjacent_Note_QA_Queue_v1.csv",
+      "role": "legacy_note_qa",
+      "rows": 1733,
+      "size_bytes": 540689,
+      "sha256": "36185a5bec143a956e8f9f0dc9da37835a172b3c6a0cb0fe5e2d4a17facdfc6a"
+    }
+  ],
+  "known_business_counts": {
+    "canonical_customers": 330,
+    "customer_occurrences": 5933,
+    "canonical_vehicles": 1979,
+    "vehicle_occurrences": 5780,
+    "customer_vehicle_relationships": 1854,
+    "canonical_requests": 21792,
+    "offer_lines": 23236,
+    "confirmed_green_sales": 10082,
+    "possible_unmarked_sales": 5190,
+    "business_day_sessions": 1063,
+    "typed_adjacent_notes": 4289
+  },
+  "quality_policy": {
+    "never_auto_merge_on_name_only": true,
+    "vin_is_primary_vehicle_dedup_key": true,
+    "sale_does_not_imply_installation": true,
+    "possible_sale_unmarked_is_not_confirmed": true,
+    "factory_and_actual_vehicle_configuration_coexist": true,
+    "wrong_cross_is_retained_as_negative_knowledge": true,
+    "ambiguous_rows_remain_in_qa": true
+  },
+  "required_pre_import_checks": [
+    "verify every artifact sha256 and row count",
+    "verify var/imports is excluded from Git",
+    "create import_batch in dry_run status",
+    "validate foreign-key resolvability without business writes",
+    "validate repeated dry-run produces identical target keys",
+    "approve tenant and actor identity",
+    "produce evidence report before apply"
+  ]
+}
