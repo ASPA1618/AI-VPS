@@ -1,2 +1,70 @@
+# Secrets and local environment
 .env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+id_rsa*
+id_ed25519*
 google-credentials.json
+*credentials*.json
+*service-account*.json
+
+# ASPA protected runtime data
+var/
+runtime-data/
+private/
+secrets/
+backups/
+dumps/
+exports/private/
+imports/private/
+
+# Legacy CRM and business data must never enter Git
+**/legacy/raw/
+**/legacy/staging/
+**/legacy/evidence/private/
+**/legacy/rejected/
+ASPA_Legacy_*.csv
+ASPA_Legacy_*.xlsx
+ASPA_Legacy_*.zip
+WORK AI online*.xlsx
+
+# Local snapshots: only explicitly sanitised publish output is allowed
+snapshots/private/
+snapshots/local/
+state/private/
+*.snapshot.tmp
+
+# Database and caches
+*.sql.gz
+*.dump
+*.backup
+*.sqlite
+*.sqlite3
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# IDE / OS
+.vscode/settings.local.json
+.idea/
+.DS_Store
+Thumbs.db
+
+# Temporary files and logs
+*.log
+*.tmp
+*.swp
+*.swo
+.cache/
+tmp/
+temp/
