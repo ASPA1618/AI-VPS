@@ -1,0 +1,132 @@
+[
+  {
+    "id": "auto-mopar-supersession-68504696ab",
+    "domain": "automotive",
+    "query": "Mopar 68504696AB current replacement supersession",
+    "preferred_domains": ["moparpartsgiant.com", "moparfactoryparts.com"],
+    "expected_term_groups": [["68504696AD", "68635938AA"]]
+  },
+  {
+    "id": "auto-mopar-frame-fender-68504696ad",
+    "domain": "automotive",
+    "query": "Mopar 68504696AD part description position",
+    "expected_term_groups": [["FRAME-FENDER", "Side Rail Assembly"], ["Passenger Side", "Right"]]
+  },
+  {
+    "id": "auto-mopar-outer-fender-68632532aa",
+    "domain": "automotive",
+    "query": "Mopar 68632532AA fender position replaces",
+    "expected_term_groups": [["Fender"], ["68276308AA"]]
+  },
+  {
+    "id": "auto-lexus-supersession-5330148220",
+    "domain": "automotive",
+    "query": "Lexus 53301-48220 superseded by replacement part number",
+    "preferred_domains": ["lexuspartsnow.com", "parts.lexus.com"],
+    "expected_term_groups": [["53301-0E260"]]
+  },
+  {
+    "id": "auto-lexus-hood-533010e260",
+    "domain": "automotive",
+    "query": "Lexus 53301-0E260 description fitment RX",
+    "expected_term_groups": [["HOOD SUB-ASSY", "Hood"], ["RX350", "RX500h"]]
+  },
+  {
+    "id": "auto-ram-trx-oil-capacity",
+    "domain": "automotive",
+    "query": "2022 Ram 1500 TRX 6.2 supercharged engine oil capacity with filter official manual",
+    "preferred_domains": ["vehicleinfo.mopar.com"],
+    "expected_term_groups": [["7.5", "7.1"]]
+  },
+  {
+    "id": "auto-ram-trx-oil-spec",
+    "domain": "automotive",
+    "query": "2022 Ram 1500 TRX 6.2 engine oil viscosity MS-12633 official",
+    "preferred_domains": ["vehicleinfo.mopar.com"],
+    "expected_term_groups": [["0W-40"], ["MS-12633"]]
+  },
+  {
+    "id": "auto-renault-k7j710-capacity",
+    "domain": "automotive",
+    "query": "Renault Logan K7J710 engine oil capacity litres",
+    "expected_term_groups": [["3.3", "3,3"]]
+  },
+  {
+    "id": "auto-renault-k7j710-approval",
+    "domain": "automotive",
+    "query": "Renault Logan K7J710 engine oil approval RN0700",
+    "expected_term_groups": [["RN0700"]]
+  },
+  {
+    "id": "auto-honda-jazz-2005-oil",
+    "domain": "automotive",
+    "query": "Honda Jazz 2005 L13A engine oil viscosity Honda Genuine Oil application guide",
+    "preferred_domains": ["honda.ie"],
+    "expected_term_groups": [["0W-20", "5W-40"]]
+  },
+  {
+    "id": "auto-hyundai-santafe-2007-coolant",
+    "domain": "automotive",
+    "query": "2007 Hyundai Santa Fe recommended engine coolant chemistry aluminum ethylene glycol manual",
+    "expected_term_groups": [["ethylene glycol", "ethylene-glycol"], ["aluminum", "aluminium"]]
+  },
+  {
+    "id": "auto-mopar-hd-68477784ab",
+    "domain": "automotive",
+    "query": "Mopar 68477784AB fitment side rail assembly",
+    "expected_term_groups": [["Ram 2500"], ["Ram 3500"]]
+  },
+  {
+    "id": "auto-mopar-classic-68267302ab",
+    "domain": "automotive",
+    "query": "Mopar 68267302AB fitment Ram 1500 Classic passenger side",
+    "expected_term_groups": [["1500 Classic"], ["Passenger Side", "Right"]]
+  },
+  {
+    "id": "auto-semantic-trx-inner-right-rail",
+    "domain": "automotive",
+    "query": "2022 Ram 1500 TRX 6.2 passenger side inner fender structural side rail closure OEM number",
+    "expected_term_groups": [["68504696AD", "68635938AA"]]
+  },
+  {
+    "id": "auto-semantic-trx-outer-right-fender",
+    "domain": "automotive",
+    "query": "2022 Ram 1500 TRX 6.2 right passenger outer front fender panel OEM number",
+    "expected_term_groups": [["68632532AA", "68276308AA"]]
+  },
+  {
+    "id": "personal-searxng-docs",
+    "domain": "personal-agent",
+    "query": "SearXNG official documentation configured search engines",
+    "preferred_domains": ["docs.searxng.org"],
+    "expected_term_groups": [["SearXNG"]]
+  },
+  {
+    "id": "personal-systemd-service-docs",
+    "domain": "personal-agent",
+    "query": "systemd service unit official manual systemd.service",
+    "preferred_domains": ["freedesktop.org"],
+    "expected_term_groups": [["systemd.service", "systemd"]]
+  },
+  {
+    "id": "personal-wsl-shutdown-docs",
+    "domain": "personal-agent",
+    "query": "Microsoft WSL shutdown command official documentation wsl --shutdown",
+    "preferred_domains": ["learn.microsoft.com"],
+    "expected_term_groups": [["wsl --shutdown", "--shutdown"]]
+  },
+  {
+    "id": "personal-python-dataclasses-docs",
+    "domain": "personal-agent",
+    "query": "Python 3 dataclasses official documentation",
+    "preferred_domains": ["docs.python.org"],
+    "expected_term_groups": [["dataclasses"]]
+  },
+  {
+    "id": "personal-docker-loopback-port",
+    "domain": "personal-agent",
+    "query": "Docker Compose bind published port to localhost 127.0.0.1 official docs",
+    "preferred_domains": ["docs.docker.com"],
+    "expected_term_groups": [["127.0.0.1", "localhost"]]
+  }
+]

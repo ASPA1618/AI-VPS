@@ -1,0 +1,26 @@
+services:
+  searxng:
+    image: docker.io/searxng/searxng:latest
+    restart: unless-stopped
+    volumes:
+      - ./searxng/settings.yml:/etc/searxng/settings.yml:ro
+    networks: [search_internal]
+
+  gateway:
+    build:
+      context: ../..
+      dockerfile: infra/search/Dockerfile
+    restart: unless-stopped
+    depends_on: [searxng]
+    environment:
+      SEARCH_GATEWAY_HOST: 0.0.0.0
+      SEARCH_GATEWAY_PORT: 8877
+      SEARCH_GATEWAY_SEARXNG_URL: http://searxng:8080
+      SEARCH_GATEWAY_JINA_ENABLED: "1"
+    ports:
+      - "127.0.0.1:8877:8877"
+    networks: [search_internal]
+
+networks:
+  search_internal:
+    internal: false
