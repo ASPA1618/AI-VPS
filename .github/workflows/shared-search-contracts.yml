@@ -1,0 +1,33 @@
+name: Shared Search Contracts
+
+on:
+  pull_request:
+    paths:
+      - "shared_search/**"
+      - "infra/search/**"
+      - "tests/test_shared_search.py"
+      - ".github/workflows/shared-search-contracts.yml"
+  push:
+    branches: [main]
+    paths:
+      - "shared_search/**"
+      - "infra/search/**"
+      - "tests/test_shared_search.py"
+
+permissions:
+  contents: read
+
+jobs:
+  contracts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compile
+        run: python -m compileall -q shared_search
+      - name: Unit tests
+        run: python -m unittest discover -s tests -p 'test_shared_search*.py' -v
+      - name: Compose contract
+        run: docker compose -f infra/search/compose.yml config >/dev/null
